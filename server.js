@@ -2,38 +2,41 @@ import express from 'express';
 import fetch from 'node-fetch';
 
 const app = express();
-
-// 🔹 Render asigna el puerto automáticamente
 const PORT = process.env.PORT || 3000;
 
-// Ruta de prueba para la quiniela
-app.get('/api/test', async (req, res) => {
+// ⚠️ TU API KEY debe estar en Render como variable de entorno
+const API_KEY = process.env.API_KEY;
+
+// ENDPOINT PARA BLOGGER (JS EJECUTABLE)
+app.get('/api/quiniela.js', async (req, res) => {
   try {
-    const r = await fetch('https://api.football-data.org/v4/competitions/PD', {
-      headers: { 'X-Auth-Token': 'fcb1f56f7ca04fdc93a8bc8a9318a010' } // <- reemplaza tu API key
-    });
+    const r = await fetch(
+      'https://api.football-data.org/v4/competitions/PD/matches',
+      {
+        headers: {
+          'X-Auth-Token': API_KEY
+        }
+      }
+    );
+
     const data = await r.json();
-    res.json(data.currentSeason);
-  } catch (e) {
-    res.status(500).json({ error: 'API error' });
+
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(
+      'window.DATOS_QUINIELA = ' + JSON.stringify(data)
+    );
+  } catch (err) {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send('window.DATOS_QUINIELA = null');
   }
 });
 
-// Ejemplo de ruta que devuelve partidos
-app.get('/api/quiniela', async (req, res) => {
-  try {
-    const r = await fetch(`https://api.football-data.org/v4/competitions/PD/matches`, {
-      headers: { 'X-Auth-Token': 'fcb1f56f7ca04fdc93a8bc8a9318a010' } // <- reemplaza tu API key
-    });
-    const data = await r.json();
-    res.json(data); // devuelve todos los partidos
-  } catch (e) {
-    res.status(500).json({ error: 'API error' });
-  }
+// RUTA SIMPLE PARA SABER SI EL SERVER VIVE
+app.get('/', (req, res) => {
+  res.send('Backend Quiniela OK');
 });
 
-// 🔹 Escuchar en el puerto correcto
+// 🔹 IMPRESCINDIBLE
 app.listen(PORT, () => {
-  console.log(`Servidor activo en el puerto ${PORT}`);
+  console.log('Servidor activo en puerto ' + PORT);
 });
-
