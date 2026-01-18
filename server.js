@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.get('/api/test', async (req, res) => {
   try {
     const r = await fetch('https://api.football-data.org/v4/competitions/PD', {
-      headers: { 'X-Auth-Token': 'TU_API_KEY_AQUI' } // <- reemplaza tu API key
+      headers: { 'X-Auth-Token': 'fcb1f56f7ca04fdc93a8bc8a9318a010' } // <- reemplaza tu API key
     });
     const data = await r.json();
     res.json(data.currentSeason);
@@ -23,7 +23,7 @@ app.get('/api/test', async (req, res) => {
 app.get('/api/quiniela', async (req, res) => {
   try {
     const r = await fetch(`https://api.football-data.org/v4/competitions/PD/matches`, {
-      headers: { 'X-Auth-Token': 'TU_API_KEY_AQUI' } // <- reemplaza tu API key
+      headers: { 'X-Auth-Token': 'fcb1f56f7ca04fdc93a8bc8a9318a010' } // <- reemplaza tu API key
     });
     const data = await r.json();
     res.json(data); // devuelve todos los partidos
@@ -36,3 +36,4 @@ app.get('/api/quiniela', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor activo en el puerto ${PORT}`);
 });
+
