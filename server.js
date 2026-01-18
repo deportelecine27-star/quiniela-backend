@@ -2,7 +2,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const API_KEY = 'fcb1f56f7ca04fdc93a8bc8a9318a010';
 const API = 'https://api.football-data.org/v4';
 
@@ -17,4 +17,5 @@ app.get('/api/test', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: 'API error' });
   }
+
 });
