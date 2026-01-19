@@ -14,12 +14,17 @@ app.get('/api/quiniela.js', async (req, res) => {
       'https://api.football-data.org/v4/competitions/PD/matches',
       {
         headers: {
-          'X-Auth-Token': API_KEY
+          'X-Auth-Token': API_KEY,
+          'User-Agent': 'quiniela-blogger'
         }
       }
     );
 
     const data = await r.json();
+
+    if (!data || !Array.isArray(data.matches)) {
+      throw new Error('Respuesta inválida');
+    }
 
     res.setHeader('Content-Type', 'application/javascript');
     res.send(
@@ -40,3 +45,4 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log('Servidor activo en puerto ' + PORT);
 });
+
