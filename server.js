@@ -8,33 +8,26 @@ const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY;
 
 // ENDPOINT PARA BLOGGER (JS EJECUTABLE)
-app.get('/api/quiniela.js', async (req, res) => {
+app.get('/api/competicion/:code.js', async (req, res) => {
   try {
+    const code = req.params.code;
+
     const r = await fetch(
-      'https://api.football-data.org/v4/competitions/PD/matches',
-      {
-        headers: {
-          'X-Auth-Token': API_KEY,
-          'User-Agent': 'quiniela-blogger'
-        }
-      }
+      `https://api.football-data.org/v4/competitions/${code}/matches`,
+      { headers:{ 'X-Auth-Token': API_KEY } }
     );
 
     const data = await r.json();
 
-    if (!data || !Array.isArray(data.matches)) {
-      throw new Error('Respuesta inválida');
-    }
+    res.setHeader('Content-Type','application/javascript');
+    res.send('window.DATOS_COMPETICION = '+JSON.stringify(data));
 
-    res.setHeader('Content-Type', 'application/javascript');
-    res.send(
-      'window.DATOS_QUINIELA = ' + JSON.stringify(data)
-    );
-  } catch (err) {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.send('window.DATOS_QUINIELA = null');
+  } catch(e){
+    res.setHeader('Content-Type','application/javascript');
+    res.send('window.DATOS_COMPETICION = null');
   }
 });
+
 
 // RUTA SIMPLE PARA SABER SI EL SERVER VIVE
 app.get('/', (req, res) => {
@@ -45,4 +38,5 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log('Servidor activo en puerto ' + PORT);
 });
+
 
