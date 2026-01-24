@@ -35,7 +35,14 @@ const response = await fetch(url, {
       throw new Error('SELAE no responde');
     }
 
-    const xml = await response.text();
+const textPreview = await response.text();
+
+if (!textPreview.includes('<quiniela')) {
+  throw new Error('No es XML de quiniela');
+}
+
+const xml = textPreview;
+
 
     const parser = new xml2js.Parser({ explicitArray: false });
     const data = await parser.parseStringPromise(xml);
