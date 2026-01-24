@@ -3,6 +3,12 @@ import fetch from "node-fetch";
 import xml2js from "xml2js";
 
 const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Quiniela oficial OK");
+});
+
+
 const PORT = process.env.PORT || 3000;
 
 app.get("/quiniela.js", async (req, res) => {
