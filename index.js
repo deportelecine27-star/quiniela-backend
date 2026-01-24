@@ -17,7 +17,8 @@ app.get('/', (req, res) => {
 // =======================
 app.get('/api/quiniela.js', async (req, res) => {
   try {
-    const url = 'https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml';
+    const url = 'https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/proxy-quiniela.js';
+
 
 const response = await fetch(url, {
   headers: {
