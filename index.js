@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // URL OFICIAL SELAE (resultados quiniela)
 const SELAE_URL =
-  'https://www.loteriasyapuestas.es/es/resultados/quiniela';
+  'https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml';
 
 app.get('/quiniela.js', async (req, res) => {
   try {
