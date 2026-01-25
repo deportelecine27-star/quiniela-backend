@@ -1,3 +1,19 @@
+module.exports = function(app){
+
+  app.get('/quiniela.js', (req, res) => {
+    res.type('application/javascript');
+    res.send(`
+      window.DATOS_QUINIELA = {
+        jornada: null,
+        partidos: []
+      };
+    `);
+  });
+
+};
+
+
+
 import fetch from "node-fetch";
 import { XMLParser } from "fast-xml-parser";
 
