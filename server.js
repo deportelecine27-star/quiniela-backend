@@ -1,18 +1,20 @@
 module.exports = function(app){
 
-  app.get('/quiniela.js', async (req, res) => {
+  app.get('/api/competicion/:code.js', async (req, res) => {
+    const code = req.params.code;
+
+    // 👇 aquí va TU código real de la API fútbol
+    const data = {
+      competition: { code },
+      matches: []
+    };
 
     res.type('application/javascript');
-    res.send(`
-      window.DATOS_QUINIELA = {
-        jornada: 0,
-        partidos: []
-      };
-    `);
-
+    res.send(`window.DATOS_COMPETICION = ${JSON.stringify(data)};`);
   });
 
 };
+;
 
 
 
@@ -57,6 +59,7 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log('Servidor activo en puerto ' + PORT);
 });
+
 
 
 
