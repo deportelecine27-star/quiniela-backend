@@ -82,3 +82,55 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log('Servidor activo en puerto', PORT);
 });
+
+
+
+const express = require('express');
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+/* =========================
+   API COMPETICIÓN (CLASIFICACIÓN)
+========================= */
+
+app.get('/api/competicion/:code.js', async (req, res) => {
+  const code = req.params.code;
+
+  // 👇 aquí va TU lógica actual (no la cambio)
+  // por ahora simulamos para comprobar que la ruta vive
+  res.type('application/javascript');
+  res.send(`
+    window.DATOS_COMPETICION = {
+      competition: { code: "${code}" },
+      matches: []
+    };
+  `);
+});
+
+/* =========================
+   API QUINIELA OFICIAL
+========================= */
+
+app.get('/api/quiniela.js', async (req, res) => {
+  res.type('application/javascript');
+  res.send(`
+    window.QUINIELA_OFICIAL = {
+      jornada: null,
+      partidos: []
+    };
+  `);
+});
+
+/* =========================
+   ROOT
+========================= */
+
+app.get('/', (req, res) => {
+  res.send('Backend fútbol OK');
+});
+
+app.listen(PORT, () => {
+  console.log('Servidor activo en puerto', PORT);
+});
+
+
