@@ -1,3 +1,6 @@
+throw new Error('🧨 ESTE INDEX SE ESTÁ EJECUTANDO');
+
+
 console.log('🔥 INDEX CORRECTO CARGADO 🔥');
 
 
