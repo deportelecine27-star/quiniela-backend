@@ -1,3 +1,22 @@
+module.exports = function(app){
+
+  app.get('/quiniela.js', async (req, res) => {
+
+    res.type('application/javascript');
+    res.send(`
+      window.DATOS_QUINIELA = {
+        jornada: 0,
+        partidos: []
+      };
+    `);
+
+  });
+
+};
+
+
+
+
 import express from 'express';
 import fetch from 'node-fetch';
 
@@ -38,5 +57,6 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
   console.log('Servidor activo en puerto ' + PORT);
 });
+
 
 
