@@ -34,7 +34,7 @@ app.get('/api/competicion/:code.js', async (req, res) => {
 app.get('/quiniela.js', (req, res) => {
   res.type('application/javascript');
   res.send(`
-    window.QUINIELA_OFICIAL = {
+    window.DATOS_QUINIELA = {
       jornada: null,
       partidos: []
     };
