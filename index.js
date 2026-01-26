@@ -31,8 +31,19 @@ app.get('/api/competicion/:code.js', async (req, res) => {
 });
 
 // ================================
-// QUINIELA (placeholder seguro)
+// QUINIELA (placeholder funcional)
 // ================================
+app.get('/api/quiniela.js', (req, res) => {
+  res.type('application/javascript');
+  res.send(`
+    window.DATOS_QUINIELA = {
+      jornada: null,
+      matches: []
+    };
+  `);
+});
+
+
 app.get('/quiniela.js', (req, res) => {
   res.type('application/javascript');
   res.send(`
