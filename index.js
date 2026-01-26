@@ -1,12 +1,11 @@
 console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
 
-
-render da  https://quiniela-backend-lwxh.onrender.com   API OKconst express = require('express');
-const fetch = require('node-fetch');
+const express = require('express');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY;
+
 
 // ================================
 // API FÚTBOL (CLASIFICACIÓN)
