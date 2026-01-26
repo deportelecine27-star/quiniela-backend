@@ -1,4 +1,7 @@
-const express = require('express');
+console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
+
+
+render da  https://quiniela-backend-lwxh.onrender.com   API OKconst express = require('express');
 const fetch = require('node-fetch');
 
 const app = express();
