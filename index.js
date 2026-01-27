@@ -1,4 +1,4 @@
-console.log('🔥 Servidor Quiniela seguro 🔥');
+console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
 
 const express = require('express');
 const fetch = require('node-fetch');
@@ -6,66 +6,58 @@ const { XMLParser } = require('fast-xml-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.API_KEY;
 
 // ================================
-// Quiniela seguro
-// ================================
-app.get('/api/quiniela.js', async (req, res) => {
-  res.type('application/javascript');
-
+// API FÚTBOL (CLASIFICACIÓN)
+app.get('/api/competicion/:code.js', async (req, res) => {
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 7000); // 7s máximo
-
+    const code = req.params.code;
     const r = await fetch(
-      'https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml',
-      { signal: controller.signal }
+      `https://api.football-data.org/v4/competitions/${code}/matches`,
+      { headers: { 'X-Auth-Token': API_KEY } }
     );
-
-    clearTimeout(timeout);
-
-    if (!r.ok) throw new Error('SELAE no responde');
-
-    const xmlText = await r.text();
-
-    const parser = new XMLParser({
-      ignoreAttributes: false,
-      attributeNamePrefix: ''
-    });
-
-    const xml = parser.parse(xmlText);
-
-    // Enviamos datos simples para test
-    const matches = (xml?.quiniela?.partido || []).map((p, i) => ({
-      id: i + 1,
-      home: p.local || 'Local',
-      away: p.visitante || 'Visitante',
-      resultado: p.resultado || null
-    }));
-
-    const jornada = xml?.quiniela?.jornada || null;
-
-    res.send(`window.DATOS_QUINIELA = ${JSON.stringify({ jornada, matches })};`);
+    const data = await r.json();
+    res.type('application/javascript');
+    res.send(`window.DATOS_COMPETICION = ${JSON.stringify(data)};`);
   } catch (e) {
-    console.error('Error Quiniela:', e.message);
-    res.send(`window.DATOS_QUINIELA = { jornada: null, matches: [] };`);
+    res.type('application/javascript');
+    res.send('window.DATOS_COMPETICION = null;');
   }
 });
 
 // ================================
-// Ruta test fútbol minimal
-// ================================
-app.get('/api/competicion/test.js', (req, res) => {
-  res.type('application/javascript');
-  res.send('window.DATOS_COMPETICION = { test: true };');
+// QUINIELA (SELAE XML -> JSON LIMPIO)
+app.get('/api/quiniela.js', async (req, res) => {
+  try {
+    const r = await fetch('https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml', { timeout: 8000 });
+    if (!r.ok) throw new Error('SELAE no responde');
+    const xmlText = await r.text();
+
+    const parser = new XMLParser({ ignoreAttributes:false, attributeNamePrefix:'' });
+    const xml = parser.parse(xmlText);
+
+    // Extraemos jornada y partidos
+    const jornada = xml.resultados.jornada || null;
+    const partidos = xml.resultados.partido
+      ? xml.resultados.partido.map(p => ({
+          home: p.local,
+          away: p.visitante,
+          status: 'FINISHED',
+          score: { home: p.marcador_local || null, away: p.marcador_visitante || null }
+        }))
+      : [];
+
+    res.type('application/javascript');
+    res.send(`window.DATOS_QUINIELA = ${JSON.stringify({ jornada, matches: partidos })};`);
+  } catch(e) {
+    res.type('application/javascript');
+    res.send('window.DATOS_QUINIELA = { jornada:null, matches:[] };');
+  }
 });
 
 // ================================
-app.get('/', (req, res) => {
-  res.send('API OK seguro');
-});
+app.get('/', (req, res) => res.send('API OK'));
 
 // ================================
-app.listen(PORT, () => {
-  console.log('Servidor activo en puerto', PORT);
-});
+app.listen(PORT, () => console.log('Servidor activo en puerto', PORT));
