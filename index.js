@@ -3,9 +3,14 @@ console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
 const express = require('express');
 const fetch = require('node-fetch');
 const { XMLParser } = require('fast-xml-parser');
+const cors = require('cors'); // 🔹 Añadido para evitar problemas de CORS
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const API_KEY = process.env.API_KEY;
+
+// 🔹 Habilitar CORS globalmente (para desarrollo/pruebas)
+app.use(cors());
 
 // ================================
 // API FÚTBOL (CLASIFICACIÓN)
@@ -16,7 +21,7 @@ app.get('/api/competicion/:code.js', async (req, res) => {
 
     const r = await fetch(
       `https://api.football-data.org/v4/competitions/${code}/matches`,
-      { headers: { 'X-Auth-Token': process.env.API_KEY || '' } }
+      { headers: { 'X-Auth-Token': API_KEY } }
     );
 
     const data = await r.json();
@@ -52,6 +57,7 @@ app.get('/api/quiniela.js', async (req, res) => {
 
     const xml = parser.parse(xmlText);
 
+    // 🔹 Devolver JSON usable directamente en el cliente
     res.send(`window.DATOS_QUINIELA = ${JSON.stringify(xml)};`);
   } catch (e) {
     res.send('window.DATOS_QUINIELA = { jornada:null, matches:[] };');
@@ -59,7 +65,9 @@ app.get('/api/quiniela.js', async (req, res) => {
 });
 
 // ================================
-app.get('/', (req, res) => res.send('API OK'));
+app.get('/', (req, res) => {
+  res.send('API OK');
+});
 
 // ================================
 app.listen(PORT, () => {
