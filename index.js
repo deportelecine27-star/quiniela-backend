@@ -1,28 +1,26 @@
-console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
+console.log('🔥 BACKEND QUINIELA FUNCIONAL 🔥');
 
 const express = require('express');
-const fetch = require('node-fetch');
+const fs = require('fs');
+const path = require('path');
 const { XMLParser } = require('fast-xml-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ================================
-// QUINIELA (SELAE XML -> JSON)
+// QUINIELA (LEER XML LOCAL -> JSON)
 // ================================
-app.get('/api/quiniela.js', async (req, res) => {
+app.get('/api/quiniela.js', (req, res) => {
   res.type('application/javascript');
 
   try {
-    const r = await fetch('https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml');
-    if (!r.ok) throw new Error('SELAE no responde');
-
-    const xmlText = await r.text();
+    const xmlPath = path.join(__dirname, 'data', 'quiniela.xml');
+    const xmlText = fs.readFileSync(xmlPath, 'utf-8');
 
     const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '' });
     const xml = parser.parse(xmlText);
 
-    // Convertimos a formato simple para frontend
     const matches = (xml?.partidos?.partido || []).map(p => ({
       homeTeam: { shortName: p.local },
       awayTeam: { shortName: p.visitante },
@@ -40,17 +38,13 @@ app.get('/api/quiniela.js', async (req, res) => {
     };`);
 
   } catch (e) {
-    console.error('Error quiniela:', e.message);
+    console.error('Error leyendo XML local:', e.message);
     res.send('window.DATOS_QUINIELA = { jornada: null, matches: [] };');
   }
 });
 
 // ================================
-app.get('/', (req, res) => {
-  res.send('API OK');
-});
+app.get('/', (req, res) => res.send('API OK'));
 
 // ================================
-app.listen(PORT, () => {
-  console.log('Servidor activo en puerto', PORT);
-});
+app.listen(PORT, () => console.log('Servidor activo en puerto', PORT));
