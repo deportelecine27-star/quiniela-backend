@@ -53,8 +53,7 @@ app.get('/api/quiniela.js', async (req, res) => {
 
     const xml = parser.parse(xmlText);
 
-    // Convertimos a un formato simple: jornada y partidos
-    // Ajusta según tu XML real
+    // Convertimos a formato simple
     const jornada =
       xml?.resultado?.jornada ||
       xml?.resultado?.numero_jornada ||
