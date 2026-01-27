@@ -1,6 +1,8 @@
 console.log('🔥 ESTE INDEX ES EL BUENO 🔥');
 
 const express = require('express');
+const fetch = require('node-fetch');
+const { XMLParser } = require('fast-xml-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,7 +24,6 @@ app.get('/api/competicion/:code.js', async (req, res) => {
 
     res.type('application/javascript');
     res.send(`window.DATOS_COMPETICION = ${JSON.stringify(data)};`);
-
   } catch (e) {
     res.type('application/javascript');
     res.send('window.DATOS_COMPETICION = null;');
@@ -30,20 +31,31 @@ app.get('/api/competicion/:code.js', async (req, res) => {
 });
 
 // ================================
-// QUINIELA (PROXY WORKER)
+// QUINIELA (SELAE XML -> JSON)
 // ================================
 app.get('/api/quiniela.js', async (req, res) => {
+  res.type('application/javascript');
+
   try {
-    // <-- Pega aquí la URL de tu Worker si cambia
-    const workerUrl = 'https://fragrant-hill-4b44.deportelecine27.workers.dev/';
+    const r = await fetch(
+      'https://www.loteriasyapuestas.es/servicios/xml/resultados/quiniela.xml',
+      { timeout: 8000 }
+    );
 
-    const xmlJs = await fetch(workerUrl).then(r => r.text());
+    if (!r.ok) throw new Error('SELAE no responde');
 
-    res.type('application/javascript');
-    res.send(xmlJs);
+    const xmlText = await r.text();
 
-  } catch(e) {
-    res.type('application/javascript');
+    const parser = new XMLParser({
+      ignoreAttributes: false,
+      attributeNamePrefix: ''
+    });
+
+    const xml = parser.parse(xmlText);
+
+    // Devolvemos JSON usable en el cliente
+    res.send(`window.DATOS_QUINIELA = ${JSON.stringify(xml)};`);
+  } catch (e) {
     res.send('window.DATOS_QUINIELA = { jornada:null, matches:[] };');
   }
 });
