@@ -13,7 +13,7 @@ let cacheXML = null;
 let cacheTime = 0;
 const CACHE_TTL = 60 * 60 * 1000;
 
-// servir frontend
+// Servir frontend
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/epg", async (req, res) => {
@@ -28,18 +28,13 @@ app.get("/epg", async (req, res) => {
     console.log("Descargando EPG...");
 
     const response = await fetch(EPG_URL);
-    let buffer = await response.arrayBuffer();
-    let data = Buffer.from(buffer);
+    const xml = await response.text();
 
-    if (EPG_URL.endsWith(".gz")) {
-      data = zlib.gunzipSync(data);
-    }
-
-    cacheXML = data.toString("utf-8");
+    cacheXML = xml;
     cacheTime = now;
 
     res.set("Content-Type", "application/xml");
-    res.send(cacheXML);
+    res.send(xml);
 
   } catch (err) {
     console.error(err);
