@@ -1,0 +1,47 @@
+import express from "express";
+import fetch from "node-fetch";
+import zlib from "zlib";
+
+const app = express();
+const PORT = 3000;
+
+const EPG_URL =
+  "https://raw.githubusercontent.com/davidmuma/EPG_dobleM/master/guiatv.xml";
+
+let cacheXML = null;
+let cacheTime = 0;
+const CACHE_TTL = 60 * 60 * 1000;
+
+app.use(express.static("public"));
+
+app.get("/epg", async (req, res) => {
+  try {
+    const now = Date.now();
+
+    if (cacheXML && now - cacheTime < CACHE_TTL) {
+      res.set("Content-Type", "application/xml");
+      return res.send(cacheXML);
+    }
+
+    const response = await fetch(EPG_URL);
+    let buffer = await response.arrayBuffer();
+    let data = Buffer.from(buffer);
+
+    if (EPG_URL.endsWith(".gz")) {
+      data = zlib.gunzipSync(data);
+    }
+
+    cacheXML = data.toString("utf-8");
+    cacheTime = now;
+
+    res.set("Content-Type", "application/xml");
+    res.send(cacheXML);
+
+  } catch (e) {
+    res.status(500).send("Error cargando EPG");
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`EPG activo en http://localhost:${PORT}`);
+});
