@@ -1,6 +1,7 @@
-import express from "express";
-import fetch from "node-fetch";
-import zlib from "zlib";
+const express = require("express");
+const fetch = require("node-fetch");
+const zlib = require("zlib");
+const path = require("path");
 
 const app = express();
 const PORT = 3000;
@@ -12,7 +13,8 @@ let cacheXML = null;
 let cacheTime = 0;
 const CACHE_TTL = 60 * 60 * 1000;
 
-app.use(express.static("public"));
+// servir frontend
+app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/epg", async (req, res) => {
   try {
@@ -22,6 +24,8 @@ app.get("/epg", async (req, res) => {
       res.set("Content-Type", "application/xml");
       return res.send(cacheXML);
     }
+
+    console.log("Descargando EPG...");
 
     const response = await fetch(EPG_URL);
     let buffer = await response.arrayBuffer();
@@ -37,7 +41,8 @@ app.get("/epg", async (req, res) => {
     res.set("Content-Type", "application/xml");
     res.send(cacheXML);
 
-  } catch (e) {
+  } catch (err) {
+    console.error(err);
     res.status(500).send("Error cargando EPG");
   }
 });
